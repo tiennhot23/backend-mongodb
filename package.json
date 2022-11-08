@@ -1,0 +1,29 @@
+{
+  "name": "backend-mongodb",
+  "version": "1.0.0",
+  "description": "## ORM/ODM",
+  "main": "index.js",
+  "scripts": {
+    "start": "nodemon index.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/tiennhot23/backend-mongodb.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/tiennhot23/backend-mongodb/issues"
+  },
+  "homepage": "https://github.com/tiennhot23/backend-mongodb#readme",
+  "dependencies": {
+    "lodash": "^4.17.21",
+    "mongoose": "^6.7.1",
+    "validator": "^13.7.0"
+  },
+  "devDependencies": {
+    "nodemon": "^2.0.20"
+  }
+}
