@@ -142,7 +142,18 @@ async function listUserBooks() {
   }
 }
 
-listUserBooks();
+async function listStudentEmailUseAggregationSyntax() {
+  try {
+    console.log(await EmailModel.find({ $expr: { $regexMatch: {
+      input: '$email',
+      regex: /@student[.\w]+$/,
+    } } }));
+  } catch (e) {
+    log(e);
+  }
+}
+
+listStudentEmailUseAggregationSyntax();
 
 function log(result) {
   console.log(JSON.stringify(result));

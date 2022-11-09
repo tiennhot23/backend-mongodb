@@ -28,7 +28,7 @@ Mongoose:
 
 Schema maps to MongoDB collection and defines the structure of the document, each key defines a property which will be cast to `SchemaType`
 
-With nested object keys, mongoose only create schema path for leaves (like phone.homePhone, phone.companyPhone) and the brach `phone` dont have path so `phone` cannot have it own validation. If u need it, u must create the __`Subdocuments`__ 
+With nested object keys, mongoose only create schema path for leaves (like phone.homePhone, phone.companyPhone) and the brach `phone` dont have path so `phone` cannot have it own validation. If u need it, u must create the __`Subdocuments`__
 
 ```js
 const userSchema = new Schema({
@@ -64,6 +64,19 @@ ___id__ property is add by default by Mongoose. When you create a new document, 
 
 > NOTE: mongoose.ObjectId !== mongoose.Types.ObjectId
 > mongoose.ObjectId is mongodb ObjectId, mongoose.Types.ObjectId is mongoose ObjectId
+
+The 12-byte ObjectId consists of:
+
+1. A 4-byte timestamp, representing the ObjectId's creation, measured in seconds since the Unix epoch.
+
+2. A 5-byte random value generated once per process. This random value is unique to the machine and process.
+
+3. A 3-byte incrementing counter, initialized to a random value.
+
+`ObjectId` can accept one of the following inputs:
+
+- Hexadecimal => 24 character hexadecimal string value
+- Integer => timestamp in second
 
 ### SchemaType
 
