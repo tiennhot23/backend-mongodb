@@ -12,15 +12,29 @@ Ví dụ: Mandago, Mongoose trong MongoDB
 
 Các ODM thì sử dụng JSON hoặc JSONB api để chuyển đổi giữa Object notation và Document notation.
 
+## RelationalDB vs DocumentDB(MongoDB)
+
+### Store data
+
+MongoDB structure data in documents (similar to json object), RelationalDB structure data in table
+
+### Flexibility schema
+
+Document can be use to model data of any shape or structure
+
+MongoDB have no restrictions on schema design and dont have any relations between documents. In relationalDB, u need to define tables and columns, every row have same structure (same column)
+
+### Relationships
+
+MongoDB doesn’t support JOIN like RelationalDB. JOIN allows the user to link data from two or more tables in a single query
+
+### Performance and Speed
+
+MongoDB can handle large unstructured data
+
 ## Mongoose vs MongoDB Driver
 
 Mongoose is an Object Data Modeling (ODM) library for MongoDB and Node.js. It manages relationships between data, provides schema validation, and is used to translate between objects in code and the representation of those objects in MongoDB
-
-Mongoose:
-  
-  Pros:
-    - Schemas to define data structure
-    - Validation, middleware, population, ...
 
 ## Mongoose
 
@@ -400,7 +414,7 @@ userSchema.virtual('books', {
 });
 
 //populate user's books
-await UserModel.findOne().populate('books')).books
+(await UserModel.findOne().populate('books')).books
 ```
 
 ## Mongoose helper

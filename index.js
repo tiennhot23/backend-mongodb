@@ -125,10 +125,10 @@ async function leaveCommentOnBookAndChapter() {
 async function addUserBooks() {
   try {
     const author = await UserModel.findOne({ lastName: 'Tiến' });
-    const book1 = await BookModel.create({ title: 'Chuyến tàu tốc hành', author: author._id });
-    const book2 = await BookModel.create({ title: 'Sói và cừu', author: author._id });
-    const book3 = await BookModel.create({ title: 'Giết con chim nhại', author: author._id });
-    const book4 = await BookModel.create({ title: 'Nhà giả kim', author: author._id });
+    const book1 = await BookModel.create({ title: 'Chuyến tàu tốc hành', author: author._id, tags: ['novel', 'detective'] });
+    const book2 = await BookModel.create({ title: 'Sói và cừu', author: author._id, tags: ['literary', 'novel'] });
+    const book3 = await BookModel.create({ title: 'Giết con chim nhại', author: author._id, tags: ['novel'] });
+    const book4 = await BookModel.create({ title: 'Nhà giả kim', author: author._id, tags: ['novel'] });
   } catch (e) {
     console.log(e);
   }
