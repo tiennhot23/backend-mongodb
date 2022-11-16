@@ -7,13 +7,13 @@ const database = 'library';
 
 class Database {
   connect() {
-    mongoose.connect(`mongodb://${server}/${database}`)
-      .then(() => {
-        console.log('Database connection successful');
-      })
-      .catch(err => {
-        console.error('Database connection error', err);
-      });
+    return mongoose.connect(`mongodb://${server}/${database}`);
+    // .then(() => {
+    //   console.log('Database connection successful');
+    // })
+    // .catch(err => {
+    //   console.error('Database connection error', err);
+    // });
   }
 
   disconnect() {
@@ -27,4 +27,4 @@ class Database {
   }
 }
 
-module.exports = new Database().connect();
+module.exports = new Database();

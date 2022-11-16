@@ -8,6 +8,8 @@ const linkSchema = new mongoose.Schema({
     type: Number,
     default: 0,
   },
+}, {
+  timestamps: { createdAt: true, updatedAt: false },
 });
 
 module.exports = mongoose.model('Link', linkSchema);
