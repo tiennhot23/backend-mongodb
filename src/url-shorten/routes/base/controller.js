@@ -9,19 +9,19 @@ module.exports = {
     try {
       const { username, password } = req.body;
       if (_.isEmpty(username) && _.isEmpty(password)) {
-        res.status(400).send('Username and password required');
+        return res.status(400).send('Username and password required');
       }
 
       const user = await UserModel.findOne({ username, password });
       if (_.isEmpty(user)) {
-        res.status(404).send('Username and password accepted');
+        return res.status(404).send('Username and password accepted');
       }
 
       const accessToken = jwt.sign({ username: user.username }, security.jwtSecretKey, { expiresIn: '7d' });
-      res.json({ accessToken });
+      return res.json({ accessToken });
     } catch (e) {
       log(e);
-      res.status(500).send(e.message);
+      return res.status(500).send(e.message);
     }
   },
 

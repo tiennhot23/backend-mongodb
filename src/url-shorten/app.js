@@ -1,13 +1,11 @@
 /* eslint-disable no-unused-vars */
 /* eslint-disable no-console */
+require('./database/mongo');
 const express = require('express');
-const database = require('./datatbase');
 const { linkRouter, userRouter, baseRouter } = require('./routes');
 
 const app = express();
 const port = process.env.PORT || 3000;
-
-database.connect();
 
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());

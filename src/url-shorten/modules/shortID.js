@@ -12,20 +12,27 @@ const randomChars = [
 const charIndex = [0, 0];
 
 /**
- * generate id base on timestamp and 2 chars
+ * generate id base on current time and 2 random chars
  */
 function generateID() {
   let ms = Number(new Date());
   let encodeStr = '';
+  // encode timestamp
   while (ms >= chars.length) {
     encodeStr = chars.charAt(ms % chars.length) + encodeStr;
     ms /= chars.length;
   }
+
+  // append string generated from randomChars
   encodeStr = getRandomStr() + encodeStr;
   randomChars.push(randomChars.shift());
   return encodeStr;
 }
 
+/**
+ * get string of 2 chars: randomChar[index] x randomChar[index]
+ * Ex: '33', '30', '3N', ...
+ */
 function getRandomStr() {
   const str = `${randomChars[charIndex[0]]}${randomChars[charIndex[1]]}`;
   plusOne(charIndex, charIndex.length - 1, randomChars.length - 1);
