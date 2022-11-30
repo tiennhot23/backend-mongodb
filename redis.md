@@ -6,9 +6,19 @@ __`Key features`__
 
 - in-memory dataset
 - key with expiration
+- single-thread
+- nosql: key-value type
+- pub/sub
 - supports various data structures
 - atomic operations
 - no concept of database
+
+__`Use case`__
+
+- sync
+- caching
+- session
+- streaming
 
 __`Advantages`__
 

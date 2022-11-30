@@ -1,8 +1,7 @@
 const _ = require('lodash');
-const jwt = require('jsonwebtoken');
 const { UserModel, LinkModel } = require('../../models');
 const { log } = require('../../common/utils');
-const { security } = require('../../configs/dev.json');
+const redis = require('../../database/redis');
 
 module.exports = {
   login: async (req, res) => {
@@ -12,13 +11,14 @@ module.exports = {
         return res.status(400).send('Username and password required');
       }
 
-      const user = await UserModel.findOne({ username, password });
+      const user = await UserModel.findOne({ username, password }, { password: 0 });
       if (_.isEmpty(user)) {
-        return res.status(404).send('Username and password accepted');
+        return res.status(404).send('Username and password not accepted');
       }
 
-      const accessToken = jwt.sign({ username: user.username }, security.jwtSecretKey, { expiresIn: '7d' });
-      return res.json({ accessToken });
+      req.session.user = user;
+
+      return res.send('Signed in');
     } catch (e) {
       log(e);
       return res.status(500).send(e.message);
@@ -32,9 +32,8 @@ module.exports = {
         return res.status(400).send('Username and password required');
       }
 
-      const user = await UserModel.create({ username, password });
-      const accessToken = jwt.sign({ username: user.username }, security.jwtSecretKey, { expiresIn: '7d' });
-      return res.json({ accessToken });
+      await UserModel.create({ username, password });
+      return res.send('Signed up');
     } catch (e) {
       log(e);
       return res.status(500).send(e.message);
@@ -48,6 +47,38 @@ module.exports = {
         { $inc: { numberOfClick: 1 } },
       );
       return res.redirect(link.rootLink);
+    } catch (e) {
+      log(e);
+      return res.status(500).send(e.message);
+    }
+  },
+
+  getCookie: async (req, res) => {
+    try {
+      const data = await redis.get(`sess:${req.sessionID}`);
+      return res.json(JSON.parse(data));
+    } catch (e) {
+      log(e);
+      return res.status(500).send(e.message);
+    }
+  },
+
+  increase: (req, res) => {
+    try {
+      if (_.has(req.session, 'count')) {
+        req.session.count += 1;
+      } else req.session.count = 0;
+      return res.send(req.session);
+    } catch (e) {
+      log(e);
+      return res.status(500).send(e.message);
+    }
+  },
+
+  deleteCookie: (req, res) => {
+    try {
+      const e = req.session.destroy();
+      return res.status(200).send(e);
     } catch (e) {
       log(e);
       return res.status(500).send(e.message);
