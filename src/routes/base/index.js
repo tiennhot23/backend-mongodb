@@ -1,12 +1,15 @@
 import express from 'express';
-import { login, accessURL, register, logout } from './controller.js';
+import { login, accessURL, register, logout, refreshSessionID } from './controller.js';
 import { requireUser } from '../../middlewares/auth.js';
+import { requireRefreshToken } from '../../middlewares/session.js';
 
 const router = express.Router();
 
 router.post('/login', login);
 
-router.post('/logout', requireUser, logout);
+router.post('/r/logout', requireUser, requireRefreshToken, logout);
+
+router.post('/r/refresh', requireRefreshToken, refreshSessionID);
 
 router.post('/register', register);
 

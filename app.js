@@ -7,7 +7,7 @@ import ConnectRedis from 'connect-redis';
 import { redis, mongo } from './src/services/index.js';
 import { adminRouter, baseRouter, linkRouter, userRouter } from './src/routes/index.js';
 import { validateUser } from './src/middlewares/auth.js';
-import { validateSession } from './src/middlewares/session.js';
+import { parseCookie } from './src/middlewares/session.js';
 
 const {
   PORT,
@@ -29,7 +29,7 @@ app.use(
   session({
     secret: SESSION_SECRET,
     name: SESSION_ID,
-    saveUninitialized: false, // save a "uninitialized" session (new session but dont have data to save) to the store
+    saveUninitialized: true, // save a "uninitialized" session (new session but dont have data to save) to the store
     // save session to store even if the session was never modified,
     // set to false if the store has implement the `touch` method (RedisStore does)
     resave: false,
@@ -53,7 +53,8 @@ app.use(
   }),
 );
 
-app.all('*', validateSession, validateUser);
+app.use(parseCookie);
+app.use(validateUser);
 
 // TODO: OAuth
 // TODO: use bcrypt to protect password

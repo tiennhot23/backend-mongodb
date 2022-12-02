@@ -46,11 +46,11 @@ async function disableAccount(req, res) {
       return res.status(HttpStatus.NOT_FOUND).send('User not found');
     }
     await redis.set(`user:${user.username}`, JSON.stringify(user), 'EX', CACHE_TTL);
+
     // get all key sess:... of user
-    const whitelistKey = await redis.hkeys(`user:${username}:whitelistKey`);
-    whitelistKey.push(`user:${username}:whitelistKey`);
+    const activeSessionID = await redis.hvals(`user:${username}:tokens`);
     // delete all  current session
-    await redis.del(whitelistKey);
+    await redis.del([...activeSessionID, `user:${username}:tokens`]);
     return res.status(HttpStatus.OK).send('Disabled');
   } catch (e) {
     return res.status(HttpStatus.INTERNAL_SERVER_ERROR).send(e.message);
@@ -61,14 +61,9 @@ async function logoutAll(req, res) {
   try {
     const { username } = req.session.user;
     // get all key sess:... of user
-    const whitelistKey = await redis.hkeys(`user:${username}:whitelistKey`);
-    whitelistKey.push(`user:${username}:whitelistKey`);
+    const activeSessionID = await redis.hvals(`user:${username}:tokens`);
     // delete all  current session
-    await redis.del(whitelistKey);
-
-    // // add all deleted session to blacklist
-    // const hSetObject = whitelistKey.reduce((pre, cur) => ({ ...pre, [cur]: Date.now() }), {});
-    // await redis.hset(`user:${username}:blacklistKey`, hSetObject);
+    await redis.del([...activeSessionID, `user:${username}:tokens`]);
     return res.status(HttpStatus.OK).send('Disabled');
   } catch (e) {
     return res.status(HttpStatus.INTERNAL_SERVER_ERROR).send(e.message);

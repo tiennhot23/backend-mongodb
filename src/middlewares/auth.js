@@ -10,15 +10,16 @@ const requireUser = async (req, res, next) => {
 };
 
 const validateUser = async (req, res, next) => {
-  let { user } = req.session;
-  if (user) {
-    user = await UserModel.findOne({ username: user.username });
+  const { username } = req.cookie;
+  if (username) {
+    const user = await UserModel.findOne({ username });
     if (!user) {
       return res.status(HttpStatus.NOT_FOUND).send('User not found');
     }
     if (!user.enabled) {
       return res.status(HttpStatus.FORBIDDEN).send('User disabled');
     }
+    req.user = user;
   }
   return next();
 };

@@ -1,9 +1,34 @@
 /* eslint-disable no-unused-vars */
 /* eslint-disable no-console */
 import _ from 'lodash';
+import { v4 as uuidv4 } from 'uuid';
 import { redis } from '../../services/index.js';
 import { HttpStatus } from '../../common/constants.js';
 import { UserModel, LinkModel } from '../../models/index.js';
+
+const refreshSessionID = async (req, res) => {
+  try {
+    const { username, refreshToken } = req.cookie;
+    const expiredSessionID = await redis.hget(`user:${username}:tokens`, `${refreshToken}`);
+
+    if (!expiredSessionID) {
+      await redis.hdel(`user:${username}:tokens`, `${refreshToken}`);
+      req.session.destroy();
+      res.clearCookie('username');
+      res.clearCookie('refreshToken');
+      return res.status(HttpStatus.BAD_REQUEST).send('Cannot authorized. Please login again');
+    }
+    await redis.hdel(`user:${username}:tokens`, `${refreshToken}`);
+    const user = await UserModel.findOne();
+    const newRefreshToken = uuidv4();
+    res.cookie('refreshToken', newRefreshToken, { path: '/r', httpOnly: true, secure: false });
+    res.cookie('username', user.username);
+    await redis.hset(`user:${username}:tokens`, `${newRefreshToken}`, `sess:${req.sessionID}`);
+    return res.send('Refreshed');
+  } catch (e) {
+    return res.status(HttpStatus.INTERNAL_SERVER_ERROR).send(e.message);
+  }
+};
 
 const login = async (req, res) => {
   try {
@@ -22,7 +47,9 @@ const login = async (req, res) => {
 
     req.session.user = user;
     res.cookie('username', user.username);
-    await redis.hset(`user:${username}:whitelistKey`, `sess:${req.sessionID}`, Date.now());
+    const refreshToken = uuidv4();
+    res.cookie('refreshToken', refreshToken, { path: '/r', httpOnly: true, secure: false });
+    await redis.hset(`user:${username}:tokens`, `${refreshToken}`, `sess:${req.sessionID}`);
 
     return res.status(HttpStatus.ACCEPTED).send('Signed in');
   } catch (e) {
@@ -32,10 +59,11 @@ const login = async (req, res) => {
 
 const logout = async (req, res) => {
   try {
-    const { user } = req.session;
-    await redis.hdel(`user:${user.username}:whitelistKey`, `sess:${req.sessionID}`);
+    const { username, refreshToken } = req.cookie;
+    await redis.hdel(`user:${username}:tokens`, `${refreshToken}`);
     req.session.destroy();
     res.clearCookie('username');
+    res.clearCookie('refreshToken');
     return res.status(HttpStatus.OK).send('Signed out');
   } catch (e) {
     return res.status(HttpStatus.INTERNAL_SERVER_ERROR).send(e.message);
@@ -86,4 +114,5 @@ export {
   logout,
   register,
   accessURL,
+  refreshSessionID,
 };
