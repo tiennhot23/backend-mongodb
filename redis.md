@@ -118,6 +118,11 @@ bitfield bkey set u4 #0 12 set u10 #1 10
 __`Note`__
 
 - `set` command has additional args: `NX` (set val if key not exist), `XX` (set val only if key exist)
+- `scan` - something u must know:
+  - `count` (default 10) option in `scan` command isnt the number of element returned at every call
+  - elements may be returned multiple times
+  - elements added during the iteration may be returned, or not
+  - [make more sense](https://engineering.q42.nl/redis-scan-cursor/)
 - `lists` is Linked-list implementation
 - `sets` can return elements in any order at every call
 - `Sorted sets` sort by a floating point value called `score`, if 2 element has same score, then it sort by value. `score` can be update by call `ZADD` again with a new score and an existed value
